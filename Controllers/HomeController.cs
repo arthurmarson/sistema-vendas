@@ -1,21 +1,28 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using SistemaVenda.DAL;
+using SistemaVenda.Entities;
 using SistemaVenda.Models;
 
 namespace SistemaVenda.Controllers
 {
     public class HomeController : Controller
     {
+        protected ApplicationDbContext Repositorio;
+
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext repositorio)
         {
             _logger = logger;
+            Repositorio = repositorio;
         }
 
         public IActionResult Index()
         {
-            return View();
+            IEnumerable<Categoria> lista = Repositorio.Categoria.ToList();
+
+            return View(lista);
         }
 
         public IActionResult Privacy()

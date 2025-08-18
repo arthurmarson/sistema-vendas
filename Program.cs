@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using SistemaVenda.DAL;
+
 namespace SistemaVenda
 {
     public class Program
@@ -5,6 +8,15 @@ namespace SistemaVenda
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseMySql(
+                    builder.Configuration.GetConnectionString("ApplicationDbContext"),
+                    new MySqlServerVersion(new Version(8, 0, 36)),
+                    builder => builder.MigrationsAssembly("SistemaVenda")
+                ));
+
+            builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            builder.Services.AddSession();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
