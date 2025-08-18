@@ -1,21 +1,10 @@
-﻿@using SistemaVenda.Entities
-@model List<Categoria>;
-
-@{
+﻿@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
-
-<div>
-    @foreach (var item in Model)
-    {
-        var aux = item.Codigo + " - " + item.Descricao;
-        <span>@aux</span><br />
-    }
 </div>
 
 
