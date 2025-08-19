@@ -7,41 +7,46 @@ using System.Data;
 
 namespace SistemaVenda.Services
 {
-    public class ClienteService
+    public class ProdutoService
     {
         protected ApplicationDbContext _context;
 
-        public ClienteService(ApplicationDbContext context)
+        public ProdutoService(ApplicationDbContext context)
         {
             _context = context;
         }
-        public async Task<List<Cliente>> FindAllAsync()
+        public async Task<List<Produto>> FindAllAsync()
         {
-            return await _context.Cliente.OrderBy(x => x.Codigo).ToListAsync();
+            return await _context.Produto
+                .Include(p => p.Categoria)
+                .OrderBy(x => x.Codigo)
+                .ToListAsync();
         }
 
-        public async Task<Cliente> FindByIdAsync(int id)
+        public async Task<Produto> FindByIdAsync(int id)
         {
-            return await _context.Cliente.FirstOrDefaultAsync(c => c.Codigo == id);
+            return await _context.Produto
+                .Include(p => p.Categoria)
+                .FirstOrDefaultAsync(c => c.Codigo == id);
         }
 
-        public async Task InsertAsync(Cliente obj)
+        public async Task InsertAsync(Produto obj)
         {
             _context.Add(obj);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(Cliente cliente)
+        public async Task UpdateAsync(Produto produto)
         {
-            bool exists = await _context.Cliente.AnyAsync(c => c.Codigo == cliente.Codigo);
+            bool exists = await _context.Produto.AnyAsync(c => c.Codigo == produto.Codigo);
             if (!exists)
             {
-                throw new NotFoundException("Cliente não encontrado.");
+                throw new NotFoundException("Produto não encontrado.");
             }
 
             try
             {
-                _context.Update(cliente);
+                _context.Update(produto);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException e)
@@ -54,8 +59,8 @@ namespace SistemaVenda.Services
         {
             try
             {
-                var obj = await _context.Cliente.FindAsync(id);
-                _context.Cliente.Remove(obj);
+                var obj = await _context.Produto.FindAsync(id);
+                _context.Produto.Remove(obj);
                 await _context.SaveChangesAsync();
 
             }

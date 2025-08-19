@@ -14,7 +14,7 @@ namespace SistemaVenda.Entities
         [ForeignKey("Categoria")]
         public int CodigoCategoria { get; set; }
 
-        public Categoria Categoria { get; set; }
+        public Categoria? Categoria { get; set; }
         public ICollection<VendaProdutos> VendasP { get; set; }
     }
 }

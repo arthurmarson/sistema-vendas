@@ -10,66 +10,73 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SistemaVenda.Controllers
 {
-    public class ClienteController : Controller
+    public class ProdutoController : Controller
     {
-        protected ClienteService _clienteService;
+        protected ProdutoService _produtoService;
+        protected CategoriaService _categoriaService;
 
-        public ClienteController(ClienteService clienteService)
+        public ProdutoController(ProdutoService produtoService, CategoriaService categoriaService)
         {
-            _clienteService = clienteService;
+            _produtoService = produtoService;
+            _categoriaService = categoriaService;
         }
 
-        // GET: Cliente
+        // GET: Produto
         public async Task<IActionResult> Index()
         {
-            return View(await _clienteService.FindAllAsync());
+            return View(await _produtoService.FindAllAsync());
         }
 
-        // GET: Cliente/Cadastro
-        public IActionResult Cadastro()
+        // GET: Produto/Cadastro
+        public async Task<IActionResult> Cadastro()
         {
-            var viewModel = new ClienteFormViewModel();
+            var categorias = await _categoriaService.FindAllAsync();
+            var viewModel = new ProdutoFormViewModel { Categorias = categorias };
             return View(viewModel);
         }
 
-        // POST: Cliente/Cadastro
+        // POST: Produto/Cadastro
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Cadastro(ClienteFormViewModel viewModel)
+        public async Task<IActionResult> Cadastro(ProdutoFormViewModel viewModel)
         {
             if (!ModelState.IsValid)
             {
+                // Recarrega as categorias para o dropdown
+                viewModel.Categorias = await _categoriaService.FindAllAsync();
                 return View(viewModel);
             }
-            var clienteEntity = viewModel.ToEntity();
-            await _clienteService.InsertAsync(clienteEntity);
+            var produtoEntity = viewModel.ToEntity();
+            await _produtoService.InsertAsync(produtoEntity);
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Cliente/Editar/5
+        // GET: Produto/Editar/5
         public async Task<IActionResult> Editar(int? id)
         {
             if (id == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Código não informado." });
             }
-            var obj = await _clienteService.FindByIdAsync(id.Value);
+            var obj = await _produtoService.FindByIdAsync(id.Value);
             if (obj == null)
             {
-                return RedirectToAction(nameof(Error), new { message = "Cliente não encontrado." });
+                return RedirectToAction(nameof(Error), new { message = "Produto não encontrado." });
             }
 
-            var vm = new ClienteFormViewModel(obj);
+            var vm = new ProdutoFormViewModel(obj);
+            vm.Categorias = await _categoriaService.FindAllAsync();
             return View(vm);
         }
 
-        // POST: Cliente/Editar/5
+        // POST: Produto/Editar/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Editar(int id, ClienteFormViewModel viewModel)
+        public async Task<IActionResult> Editar(int id, ProdutoFormViewModel viewModel)
         {
             if (!ModelState.IsValid)
             {
+                viewModel.Categorias = await _categoriaService.FindAllAsync();
                 return View(viewModel);
             }
             if (id != viewModel.Codigo)
@@ -78,8 +85,8 @@ namespace SistemaVenda.Controllers
             }
             try
             {
-                var clienteToUpdate = viewModel.ToEntity();
-                await _clienteService.UpdateAsync(clienteToUpdate);
+                var produtoToUpdate = viewModel.ToEntity();
+                await _produtoService.UpdateAsync(produtoToUpdate);
                 return RedirectToAction(nameof(Index));
             }
             catch (NotFoundException e)
@@ -92,29 +99,29 @@ namespace SistemaVenda.Controllers
             }
         }
 
-        // GET: Cliente/Deletar/5
+        // GET: Produto/Deletar/5
         public async Task<IActionResult> Deletar(int? id)
         {
             if (id == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Código não informado." });
             }
-            var obj = await _clienteService.FindByIdAsync(id.Value);
+            var obj = await _produtoService.FindByIdAsync(id.Value);
             if (obj == null)
             {
-                return RedirectToAction(nameof(Error), new { message = "Código não encontrado." });
+                return RedirectToAction(nameof(Error), new { message = "Produto não encontrado." });
             }
             return View(obj);
         }
 
-        // POST: Cliente/Deletar/5
+        // POST: Produto/Deletar/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Deletar(int id)
         {
             try
             {
-                await _clienteService.RemoveAsync(id);
+                await _produtoService.RemoveAsync(id);
                 return RedirectToAction(nameof(Index));
             }
             catch (IntegrityException e)

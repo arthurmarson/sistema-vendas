@@ -12,19 +12,17 @@ namespace SistemaVenda.Controllers
 {
     public class CategoriaController : Controller
     {
-        protected ApplicationDbContext _context;
         protected CategoriaService _categoriaService;
 
-        public CategoriaController(ApplicationDbContext context, CategoriaService categoriaService)
+        public CategoriaController(CategoriaService categoriaService)
         {
-            _context = context;
             _categoriaService = categoriaService;
         }
 
         // GET: Categoria
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Categoria.ToListAsync());
+            return View(await _categoriaService.FindAllAsync());
         }
 
         // GET: Categoria/Cadastro

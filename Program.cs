@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using SistemaVenda.DAL;
 using SistemaVenda.Services;
+using System.Globalization;
 
 namespace SistemaVenda
 {
@@ -21,6 +23,7 @@ namespace SistemaVenda
 
             builder.Services.AddScoped<CategoriaService>();
             builder.Services.AddScoped<ClienteService>();
+            builder.Services.AddScoped<ProdutoService>();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
@@ -37,6 +40,17 @@ namespace SistemaVenda
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
+            // Add after other service configurations but before app.UseRouting()
+            var enUS = new CultureInfo("en-US");
+            var localizationOptions = new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new RequestCulture("en-US"),
+                SupportedCultures = new List<CultureInfo> { enUS },
+                SupportedUICultures = new List<CultureInfo> { enUS }
+            };
+
+            app.UseRequestLocalization(localizationOptions);
 
             app.UseRouting();
 
