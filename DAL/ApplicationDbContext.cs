@@ -5,7 +5,7 @@ namespace SistemaVenda.DAL
 {
     public class ApplicationDbContext : DbContext
     {
-        public DbSet<Categoria> Categoria { get; set; }
+        public DbSet<Categoria> Categoria { get; set; } = default!;
         public DbSet<Cliente> Cliente { get; set; }
         public DbSet<Produto> Produto { get; set; }
         public DbSet<Usuario> Usuario { get; set; }

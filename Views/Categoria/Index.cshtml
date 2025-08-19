@@ -1,0 +1,44 @@
+﻿@model IEnumerable<SistemaVenda.Entities.Categoria>
+
+@{
+    ViewData["Title"] = "Categorias";
+}
+
+<h2>@ViewData["Title"]</h2>
+<br />
+
+
+<div>
+    <a asp-action="Cadastro" class="btn btn-primary">Cadastrar Categoria</a>
+</div>
+<br />
+
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Codigo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Descricao)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td> @item.Codigo</td>
+                <td> @item.Descricao</td>
+                <td>
+                    <a asp-action="Editar" asp-route-id="@item.Codigo">Editar</a>
+                    <a asp-action="Deletar" asp-route-id="@item.Codigo">Deletar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+
+</table>
+<br />
+

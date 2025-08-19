@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SistemaVenda.DAL;
+using SistemaVenda.Services;
 
 namespace SistemaVenda
 {
@@ -17,6 +18,9 @@ namespace SistemaVenda
 
             builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             builder.Services.AddSession();
+
+            builder.Services.AddScoped<CategoriaService>();
+            builder.Services.AddScoped<ClienteService>();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
