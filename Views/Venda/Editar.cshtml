@@ -1,0 +1,183 @@
+﻿@model SistemaVenda.Models.VendaFormViewModel  
+@using Microsoft.AspNetCore.Mvc.Rendering  
+
+@{  
+    ViewData["Title"] = "Editar Venda";  
+}  
+
+<h2>Editar Venda</h2>  
+
+<h4>Venda</h4>  
+<hr />  
+<div class="row">  
+    <div>  
+        <form asp-action="Editar" method="post">  
+            <div asp-validation-summary="All" class="col-md-6">  
+                <input asp-for="Codigo" type="hidden" value="@Model.Codigo" />  
+
+                <fieldset>  
+                    <label asp-for="Data" class="form-label mt-3"></label>  
+                    <input asp-for="Data" type="date" value="@Model.Data" class="form-control" />  
+                    <span asp-validation-for="Data" class="text-danger"></span>  
+                </fieldset>  
+
+                <fieldset>  
+                    <label asp-for="CodigoCliente" class="form-label mt-3">Cliente</label>  
+                    <select asp-for="CodigoCliente" asp-items="Model.ListaClientes" class="form-control">  
+                        <option value="">Selecione um cliente...</option>  
+                    </select>  
+                    <span asp-validation-for="CodigoCliente" class="text-danger"></span>  
+                </fieldset>  
+
+                <fieldset>  
+                    <label asp-for="ListaProdutos" class="form-label mt-3">Produtos</label>  
+                    <select id="cboProduto" onchange="BuscarPrecoProduto()" asp-items="Model.ListaProdutos" class="form-control">  
+                        <option value="">Selecione um produto...</option>  
+                    </select>  
+                </fieldset>  
+
+                <fieldset>  
+                    <label class="form-label mt-3">Preço Unitário</label>  
+                    <input id="txtPrecoUnitario" type="number" class="form-control" readonly />  
+                </fieldset>  
+
+                <fieldset>  
+                    <label class="form-label mt-3">Quantidade</label>  
+                    <input id="txtQtde" type="number" class="form-control" onchange="CalcularSubTotal()" />  
+                </fieldset>  
+
+                <fieldset>  
+                    <label class="form-label mt-3">Sub-Total</label>  
+                    <input id="txtSubTotal" type="number" class="form-control" readonly />  
+                </fieldset>  
+
+                <fieldset class="form-group">  
+                    <button type="button" class="btn btn-info mt-3" onclick="AddProduto()">Adicionar</button>  
+                    <br />  
+                    <br />  
+                </fieldset>  
+            </div>  
+
+            <div class="form-control">  
+                <table class="table table-striped table-hover col-md-12" id="produtos-table">  
+                    <thead>  
+                        <tr>  
+                            <th>Produto</th>  
+                            <th>Valor Unitário</th>  
+                            <th>Quantidade</th>  
+                            <th>Valor Total</th>  
+                        </tr>  
+                    </thead>  
+                    <tbody id="gridProdutos">  
+                        @if (Model.JsonProdutos != null)  
+                        {  
+                            var produtos = Newtonsoft.Json.JsonConvert.DeserializeObject<List<dynamic>>(Model.JsonProdutos);  
+                            foreach (var produto in produtos)  
+                            {  
+                                <tr>  
+                                    <td>@produto.CodigoProduto</td>  
+                                    <td>@produto.ValorUnitario</td>  
+                                    <td>@produto.Quantidade</td>  
+                                    <td>@produto.ValorTotal</td>  
+                                </tr>  
+                            }  
+                        }  
+                    </tbody>  
+                </table>  
+            </div>  
+
+            <div class="col-md-3">  
+                <label asp-for="Total" class="form-label mt-3"></label>  
+                <input id="txtTotal" asp-for="Total" type="number" value="@Model.Total" class="form-control" readonly />  
+                <span asp-validation-for="Total" class="text-danger"></span>  
+            </div>  
+
+            <textarea asp-for="JsonProdutos" id="txtJsonProdutos" class="col-md-10" style="display:none">@Model.JsonProdutos</textarea>  
+
+            <fieldset class="form-group">  
+                <input type="submit" value="Salvar" class="btn btn-success mt-3" />  
+                <br />  
+                <br />  
+            </fieldset>  
+        </form>  
+    </div>  
+</div>  
+
+<div>  
+    <a asp-action="Index">Voltar Para a Lista</a>  
+</div>  
+
+@section Scripts {  
+    <script>  
+
+        function BuscarPrecoProduto() {  
+            const produtoId = document.getElementById('cboProduto').value;  
+
+            if (!produtoId) {  
+                document.getElementById('txtPrecoUnitario').value = '';  
+                return;  
+            }  
+
+            fetch(`/Venda/LerValorProduto/${produtoId}`)  
+                .then(response => {  
+                    if (!response.ok) {  
+                        throw new Error('Erro ao buscar o valor do produto');  
+                    }  
+                    return response.json();  
+                })  
+                .then(data => {  
+                    document.getElementById('txtPrecoUnitario').value = data.valor.toFixed(2);  
+                })  
+                .catch(error => {  
+                    console.error('Erro:', error);  
+                    alert('Não foi possível obter o valor do produto.');  
+                });  
+        }  
+
+        function CalcularSubTotal() {  
+            var precoUnitario = parseFloat(document.getElementById('txtPrecoUnitario').value) || 0;  
+            var quantidade = parseInt(document.getElementById('txtQtde').value) || 0;  
+            var subTotal = precoUnitario * quantidade;  
+            document.getElementById('txtSubTotal').value = subTotal.toFixed(2);  
+        }  
+
+        var Items = new Object();  
+        Items.Produtos = @Html.Raw(Model.JsonProdutos ?? "[]");  
+        var gridProdutos = document.getElementById("gridProdutos");  
+
+        function AddProduto() {  
+            var CodigoProduto = document.getElementById('cboProduto');  
+            var Qtde = document.getElementById('txtQtde').value;  
+            var PrecoUnitario = document.getElementById('txtPrecoUnitario').value;  
+            var SubTotal = document.getElementById('txtSubTotal').value;  
+
+            Items.Produtos.push({  
+                "CodigoProduto": CodigoProduto.value,  
+                "Quantidade": Qtde,  
+                "ValorUnitario": PrecoUnitario,  
+                "ValorTotal": SubTotal  
+            });  
+
+            document.getElementById("txtJsonProdutos").value = JSON.stringify(Items.Produtos);  
+
+            var linhaGrid =  
+                "<tr id='" + CodigoProduto + "'>" +  
+                "<td>" + CodigoProduto.options[CodigoProduto.selectedIndex].text + "</td>" +  
+                "<td>" + PrecoUnitario + "</td>" +  
+                "<td>" + Qtde + "</td>" +  
+                "<td> R$" + SubTotal + "</td>" +  
+                "</tr>";  
+
+            gridProdutos.innerHTML += linhaGrid;  
+
+            var total = Number(document.getElementById("txtTotal").value.toString().replace(",", ".")) + Number(SubTotal);  
+            document.getElementById("txtTotal").value = total.toFixed(2);  
+
+            document.getElementById("txtQtde").value = '';  
+            document.getElementById("txtSubTotal").value = '';  
+            document.getElementById("txtPrecoUnitario").value = '';  
+            document.getElementById("cboProduto").selectedIndex = -1;  
+        }  
+
+    </script>  
+}

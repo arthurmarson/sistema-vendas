@@ -24,6 +24,7 @@ namespace SistemaVenda
             builder.Services.AddScoped<CategoriaService>();
             builder.Services.AddScoped<ClienteService>();
             builder.Services.AddScoped<ProdutoService>();
+            builder.Services.AddScoped<VendaService>();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();

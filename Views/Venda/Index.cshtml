@@ -1,8 +1,50 @@
-﻿<div class="row" style="text-align: center;">
-	<div class="col-md-4">
-		<div>
-			<a href=""></a>
-		</div>
-	</div>
-</div>
+﻿@model IEnumerable<SistemaVenda.Entities.Venda>
 
+@{
+    ViewData["Title"] = "Vendas";
+}
+
+<h2>@ViewData["Title"]</h2>
+<br />
+
+<div>
+    <a asp-action="Cadastro" class="btn btn-primary">Cadastrar Venda</a>
+</div>
+<br />
+
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Codigo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Data)
+            </th>
+            <th>
+                Cliente
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Total)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Codigo</td>
+                <td>@item.Data.ToString("dd/MM/yyyy")</td>
+                @* <td>@item.Cliente?.Nome</td> *@
+                <td>@item.CodigoCliente</td>
+                <td>@item.Total</td>
+                <td>
+                    <a asp-action="Editar" asp-route-id="@item.Codigo">Editar</a>
+                    <a asp-action="Deletar" asp-route-id="@item.Codigo">Deletar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<br />
