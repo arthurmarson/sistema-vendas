@@ -18,7 +18,8 @@ namespace SistemaVenda
                     builder => builder.MigrationsAssembly("SistemaVenda")
                 ));
 
-            builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            //builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            builder.Services.AddHttpContextAccessor();
             builder.Services.AddSession();
 
             builder.Services.AddScoped<CategoriaService>();
@@ -36,7 +37,7 @@ namespace SistemaVenda
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
