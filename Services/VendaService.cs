@@ -105,13 +105,30 @@ namespace SistemaVenda.Services
         {
             try
             {
-                var obj = await _context.Venda.FindAsync(id);
-                _context.Venda.Remove(obj);
+                var venda = await _context.Venda
+                    .Include(v => v.Produtos) // Incluir os produtos relacionados
+                    .FirstOrDefaultAsync(v => v.Codigo == id);
+
+                if (venda == null)
+                {
+                    throw new NotFoundException("Venda não encontrada.");
+                }
+
+                // Remover os produtos relacionados
+                _context.VendaProdutos.RemoveRange(venda.Produtos);
+
+                // Remover a venda
+                _context.Venda.Remove(venda);
+
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException e)
             {
-                throw new IntegrityException(e.Message);
+                throw new IntegrityException("Erro ao deletar a venda. Verifique se há dependências relacionadas.", e);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Ocorreu um erro inesperado ao tentar deletar a venda.", e);
             }
         }
 

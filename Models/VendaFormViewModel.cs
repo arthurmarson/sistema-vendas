@@ -27,7 +27,7 @@ namespace SistemaVenda.Models
         [Display(Name = "Lista de Produtos")]
         public IEnumerable<SelectListItem> ListaProdutos { get; set; }
 
-        public string JsonProdutos { get; set; }
+        public string? JsonProdutos { get; set; }
 
 
 
