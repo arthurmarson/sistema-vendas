@@ -1,0 +1,45 @@
+﻿@model SistemaVenda.Models.LoginFormViewModel;
+
+@{
+	ViewData["Title"] = "Login";
+	Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>@ViewData["Title"]</title>
+	<link href="/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+</head>
+
+<body class="d-flex align-items-center justify-content-center vh-100 bg-light">
+	<div class="card shadow-sm p-4" style="width: 100%; max-width: 400px;">
+		<div>
+			<div class="text-center mb-4">
+				<img src="~/img/logo.png" class="img-fluid" style="max-height: 100px;" alt="Logo do site" />
+			</div>
+		</div>
+
+		<h1 class="h4 text-center mb-4">@ViewData["Title"]</h1>
+		<form asp-controller="Login" asp-action="Index">
+			<div class="mb-3">
+				<label asp-for="Email" class="form-label"></label>
+				<input asp-for="Email" type="email" class="form-control" id="email" placeholder="Digite seu email" required>
+				<span asp-validation-for="Email" class="text-danger"></span>
+			</div>
+			<div class="mb-3">
+				<label asp-for="Senha" class="form-label"></label>
+				<input asp-for="Senha" type="password" class="form-control" id="senha" placeholder="Digite sua senha" required>
+				<span asp-validation-for="Senha" class="text-danger"></span>
+			</div>
+			<button type="submit" class="btn btn-primary w-100">Entrar</button>
+			<span style="color:red">@ViewData["ErrorMessage"]</span>
+		</form>
+		<div class="text-center mt-3">
+			<a href="#" class="link-primary">Esqueceu sua senha?</a>
+		</div>
+	</div>
+</body>
+</html>

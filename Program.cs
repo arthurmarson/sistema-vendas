@@ -26,6 +26,7 @@ namespace SistemaVenda
             builder.Services.AddScoped<ProdutoService>();
             builder.Services.AddScoped<VendaService>();
             builder.Services.AddScoped<RelatorioService>();
+            builder.Services.AddScoped<LoginService>();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
@@ -42,6 +43,7 @@ namespace SistemaVenda
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseSession();
 
             // Add after other service configurations but before app.UseRouting()
             var enUS = new CultureInfo("en-US");
@@ -60,7 +62,7 @@ namespace SistemaVenda
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Login}/{action=Index}/{id?}");
 
             app.Run();
         }
