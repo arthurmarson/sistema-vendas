@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Domain.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Protocol.Plugins;
 using SalesWebMvc.Services.Exceptions;
@@ -28,76 +29,76 @@ namespace SistemaVenda.Controllers
         }
 
         // GET: Produto/Cadastro
-        public async Task<IActionResult> Cadastro()
-        {
-            var categorias = await _categoriaService.FindAllAsync();
-            var viewModel = new ProdutoFormViewModel { Categorias = categorias };
-            return View(viewModel);
-        }
+        //public async Task<IActionResult> Cadastro()
+        //{
+        //    var categorias = await _categoriaService.FindAllAsync();
+        //    var viewModel = new ProdutoFormViewModel { Categorias = categorias };
+        //    return View(viewModel);
+        //}
 
-        // POST: Produto/Cadastro
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Cadastro(ProdutoFormViewModel viewModel)
-        {
-            if (!ModelState.IsValid)
-            {
-                // Recarrega as categorias para o dropdown
-                viewModel.Categorias = await _categoriaService.FindAllAsync();
-                return View(viewModel);
-            }
-            var produtoEntity = viewModel.ToEntity();
-            await _produtoService.InsertAsync(produtoEntity);
-            return RedirectToAction(nameof(Index));
-        }
+        //// POST: Produto/Cadastro
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Cadastro(ProdutoFormViewModel viewModel)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        // Recarrega as categorias para o dropdown
+        //        viewModel.Categorias = await _categoriaService.FindAllAsync();
+        //        return View(viewModel);
+        //    }
+        //    var produtoEntity = viewModel.ToEntity();
+        //    await _produtoService.InsertAsync(produtoEntity);
+        //    return RedirectToAction(nameof(Index));
+        //}
 
-        // GET: Produto/Editar/5
-        public async Task<IActionResult> Editar(int? id)
-        {
-            if (id == null)
-            {
-                return RedirectToAction(nameof(Error), new { message = "Código não informado." });
-            }
-            var obj = await _produtoService.FindByIdAsync(id.Value);
-            if (obj == null)
-            {
-                return RedirectToAction(nameof(Error), new { message = "Produto não encontrado." });
-            }
+        //// GET: Produto/Editar/5
+        //public async Task<IActionResult> Editar(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return RedirectToAction(nameof(Error), new { message = "Código não informado." });
+        //    }
+        //    var obj = await _produtoService.FindByIdAsync(id.Value);
+        //    if (obj == null)
+        //    {
+        //        return RedirectToAction(nameof(Error), new { message = "Produto não encontrado." });
+        //    }
 
-            var vm = new ProdutoFormViewModel(obj);
-            vm.Categorias = await _categoriaService.FindAllAsync();
-            return View(vm);
-        }
+        //    var vm = new ProdutoFormViewModel(obj);
+        //    vm.Categorias = await _categoriaService.FindAllAsync();
+        //    return View(vm);
+        //}
 
-        // POST: Produto/Editar/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Editar(int id, ProdutoFormViewModel viewModel)
-        {
-            if (!ModelState.IsValid)
-            {
-                viewModel.Categorias = await _categoriaService.FindAllAsync();
-                return View(viewModel);
-            }
-            if (id != viewModel.Codigo)
-            {
-                return RedirectToAction(nameof(Error), new { message = "Código inconsistente." });
-            }
-            try
-            {
-                var produtoToUpdate = viewModel.ToEntity();
-                await _produtoService.UpdateAsync(produtoToUpdate);
-                return RedirectToAction(nameof(Index));
-            }
-            catch (NotFoundException e)
-            {
-                return RedirectToAction(nameof(Error), new { message = e.Message });
-            }
-            catch (DbConcurrencyException e)
-            {
-                return RedirectToAction(nameof(Error), new { message = e.Message });
-            }
-        }
+        //// POST: Produto/Editar/5
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Editar(int id, ProdutoFormViewModel viewModel)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        viewModel.Categorias = await _categoriaService.FindAllAsync();
+        //        return View(viewModel);
+        //    }
+        //    if (id != viewModel.Codigo)
+        //    {
+        //        return RedirectToAction(nameof(Error), new { message = "Código inconsistente." });
+        //    }
+        //    try
+        //    {
+        //        var produtoToUpdate = viewModel.ToEntity();
+        //        await _produtoService.UpdateAsync(produtoToUpdate);
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    catch (NotFoundException e)
+        //    {
+        //        return RedirectToAction(nameof(Error), new { message = e.Message });
+        //    }
+        //    catch (DbConcurrencyException e)
+        //    {
+        //        return RedirectToAction(nameof(Error), new { message = e.Message });
+        //    }
+        //}
 
         // GET: Produto/Deletar/5
         public async Task<IActionResult> Deletar(int? id)

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<SistemaVenda.Entities.Categoria>
+﻿@model List<SistemaVenda.Models.CategoriaViewModel>
 
 @{
     ViewData["Title"] = "Categorias";
@@ -17,10 +17,12 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Codigo)
+                @* @Html.DisplayNameFor(model => model.Codigo) *@
+                Código
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Descricao)
+                @* @Html.DisplayNameFor(model => model.Descricao) *@
+                Descrição
             </th>
             <th></th>
         </tr>
