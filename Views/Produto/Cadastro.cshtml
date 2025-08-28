@@ -31,10 +31,10 @@
 			</fieldset>
 			<fieldset>
 				<label asp-for="CodigoCategoria" class="form-label mt-3">Categoria</label>
-				<select asp-for="CodigoCategoria" class="form-control"
-						asp-items="@(new SelectList(Model.Categorias, "Codigo", "Descricao"))">
-					<option value="">Selecione...</option>
-				</select>
+                <select asp-for="CodigoCategoria" class="form-control"
+                        asp-items="@(new SelectList(Model.Categorias, nameof(CategoriaViewModel.Codigo), nameof(CategoriaViewModel.Descricao)))">
+                    <option value="">Selecione...</option>
+                </select>
 				<span asp-validation-for="CodigoCategoria" class="text-danger"></span>
 			</fieldset>
 			<fieldset class="form-group">

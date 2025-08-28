@@ -1,4 +1,4 @@
-﻿@model IEnumerable<SistemaVenda.Entities.Venda>
+﻿@model List<SistemaVenda.Models.VendaFormViewModel>
 
 @{
     ViewData["Title"] = "Vendas";
@@ -16,16 +16,16 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Codigo)
+                @Html.DisplayNameFor(model => model[0].Codigo)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Data)
+                @Html.DisplayNameFor(model => model[0].Data)
             </th>
             <th>
                 Cliente
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Total)
+                @Html.DisplayNameFor(model => model[0].Total)
             </th>
             <th></th>
         </tr>

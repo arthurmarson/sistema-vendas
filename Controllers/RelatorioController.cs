@@ -1,23 +1,20 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using SistemaVenda.Models;
-using SistemaVenda.Services;
-using System.Threading.Tasks;
-using System.Linq;
+﻿using Application.ApplicationServices.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace SistemaVenda.Controllers
 {
     public class RelatorioController : Controller
     {
-        protected RelatorioService _relatorioService;
+        protected IVendaApplicationService _vendaApplicationService;
 
-        public RelatorioController(RelatorioService relatorioService)
+        public RelatorioController(IVendaApplicationService vendaApplicationService)
         {
-            _relatorioService = relatorioService;
+            _vendaApplicationService = vendaApplicationService;
         }
 
         public async Task<IActionResult> Index()
         {
-            var listaVendaProduto = await _relatorioService.FindAllAsync();
+            var listaVendaProduto = _vendaApplicationService.ListaRelatorio();
 
             if (listaVendaProduto == null || !listaVendaProduto.Any())
             {

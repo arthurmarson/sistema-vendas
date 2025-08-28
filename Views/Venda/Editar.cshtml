@@ -69,19 +69,20 @@
                         </tr>  
                     </thead>  
                     <tbody id="gridProdutos">  
-                        @if (Model.JsonProdutos != null)  
-                        {  
-                            var produtos = Newtonsoft.Json.JsonConvert.DeserializeObject<List<dynamic>>(Model.JsonProdutos);  
-                            foreach (var produto in produtos)  
-                            {  
-                                <tr>  
-                                    <td>@produto.CodigoProduto</td>  
-                                    <td>@produto.ValorUnitario.ToString("F2")</td>  
+                        @if (!string.IsNullOrEmpty(Model.JsonProdutos))
+                        {
+                            var produtos = Newtonsoft.Json.JsonConvert.DeserializeObject<List<dynamic>>(Model.JsonProdutos);
+
+                            foreach (var produto in produtos)
+                            {
+                                <tr>
+                                    <td>@produto.CodigoProduto</td>
+                                    <td>@produto.ValorUnitario.ToString("F2")</td>
                                     <td>@produto.Quantidade</td>
                                     <td>@produto.ValorTotal.ToString("F2")</td>
-                                </tr>  
-                            }  
-                        }  
+                                </tr>
+                            }
+                        }
                     </tbody>  
                 </table>  
             </div>  
@@ -126,7 +127,7 @@
                     return response.json();  
                 })  
                 .then(data => {  
-                    document.getElementById('txtPrecoUnitario').value = data.valor.toFixed(2);  
+                    document.getElementById('txtPrecoUnitario').value = data.toFixed(2);  
                 })  
                 .catch(error => {  
                     console.error('Erro:', error);  

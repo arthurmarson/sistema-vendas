@@ -5,9 +5,8 @@ using Domain.Repository;
 using Domain.Services;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using Repository.Context;
 using Repository.Entities;
-using SistemaVenda.DAL;
-using SistemaVenda.Services;
 using System.Globalization;
 
 namespace SistemaVenda
@@ -18,16 +17,8 @@ namespace SistemaVenda
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Ficara por enquanto pois o projeto ainda não foi todo migrado para DDD
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseMySql(
-                    builder.Configuration.GetConnectionString("ApplicationDbContext"),
-                    new MySqlServerVersion(new Version(8, 0, 36)),
-                    builder => builder.MigrationsAssembly("SistemaVenda")
-                ));
-
             // A princípio, será definitiva
-            builder.Services.AddDbContext<Repository.Context.ApplicationDbContext>(options =>
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseMySql(
                     builder.Configuration.GetConnectionString("ApplicationDbContext"),
                     new MySqlServerVersion(new Version(8, 0, 36)),
@@ -38,20 +29,28 @@ namespace SistemaVenda
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddSession();
 
-            builder.Services.AddScoped<ClienteService>();
-            builder.Services.AddScoped<ProdutoService>();
-            builder.Services.AddScoped<VendaService>();
-            builder.Services.AddScoped<RelatorioService>();
-            builder.Services.AddScoped<LoginService>();
 
             // Application Service
             builder.Services.AddScoped<ICategoriaApplicationService, CategoriaApplicationService>();
+            builder.Services.AddScoped<IClienteApplicationService, ClienteApplicationService>();
+            builder.Services.AddScoped<IProdutoApplicationService, ProdutoApplicationService>();
+            builder.Services.AddScoped<IVendaApplicationService, VendaApplicationService>();
+            builder.Services.AddScoped<IUsuarioApplicationService, UsuarioApplicationService>();
 
             // Domain Service 
             builder.Services.AddScoped<ICategoriaService, CategoriaService>();
+            builder.Services.AddScoped<IClienteService, ClienteService>();
+            builder.Services.AddScoped<IProdutoService, ProdutoService>();
+            builder.Services.AddScoped<IVendaService, VendaService>();
+            builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 
             // Repository
             builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
+            builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
+            builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
+            builder.Services.AddScoped<IVendaRepository, VendaRepository>();
+            builder.Services.AddScoped<IVendaProdutosRepository, VendaProdutosRepository>();
+            builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();

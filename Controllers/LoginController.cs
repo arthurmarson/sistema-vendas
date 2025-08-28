@@ -1,20 +1,18 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Application.ApplicationServices.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using SistemaVenda.Entities;
 using SistemaVenda.Helpers;
 using SistemaVenda.Models;
-using SistemaVenda.Services;
 
 namespace SistemaVenda.Controllers
 {
     public class LoginController : Controller
     {
-        protected LoginService _loginService;
+        protected IUsuarioApplicationService _usuarioApplicationService;
         protected IHttpContextAccessor _httpContextAccessor;
 
-        public LoginController(LoginService loginService, IHttpContextAccessor httpContextAccessor)
+        public LoginController(IUsuarioApplicationService usuarioApplicationService, IHttpContextAccessor httpContextAccessor)
         {
-            _loginService = loginService;
+            _usuarioApplicationService = usuarioApplicationService;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -43,7 +41,7 @@ namespace SistemaVenda.Controllers
                 return View(viewModel);
             }
 
-            var usuario = await _loginService.AuthenticateAsync(viewModel.Email, viewModel.Senha);
+            var usuario = await _usuarioApplicationService.AuthenticateAsync(viewModel.Email, viewModel.Senha);
             if (usuario != null)
             {
                 var httpContext = _httpContextAccessor.HttpContext;
@@ -51,7 +49,7 @@ namespace SistemaVenda.Controllers
                 {
                     httpContext.Session.SetString(Sessao.NOME_USUARIO, usuario.Nome); // Use o nome do usuário retornado
                     httpContext.Session.SetString(Sessao.EMAIL_USUARIO, usuario.Email);
-                    httpContext.Session.SetInt32(Sessao.CODIGO_USUARIO, usuario.Codigo ?? 0);
+                    httpContext.Session.SetInt32(Sessao.CODIGO_USUARIO, usuario.Codigo);
                     httpContext.Session.SetInt32(Sessao.LOGADO, 1);
                 }
 

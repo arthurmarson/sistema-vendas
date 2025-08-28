@@ -1,4 +1,4 @@
-﻿@model IEnumerable<SistemaVenda.Entities.Produto>
+﻿@model List<SistemaVenda.Models.ProdutoFormViewModel>
 
 @{
     ViewData["Title"] = "Produtos";
@@ -16,16 +16,16 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Codigo)
+                @Html.DisplayNameFor(model => model[0].Codigo)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Descricao)
+                @Html.DisplayNameFor(model => model[0].Descricao)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Quantidade)
+                @Html.DisplayNameFor(model => model[0].Quantidade)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Valor)
+                @Html.DisplayNameFor(model => model[0].Valor)
             </th>
             <th>
                 Categoria
@@ -41,7 +41,7 @@
                 <td>@item.Descricao</td>
                 <td>@item.Quantidade</td>
                 <td>@item.Valor</td>
-                <td>@item.Categoria?.Descricao</td>
+                <td>@item.Categoria.Descricao</td>
                 <td>
                     <a asp-action="Editar" asp-route-id="@item.Codigo">Editar</a>
                     <a asp-action="Deletar" asp-route-id="@item.Codigo">Deletar</a>

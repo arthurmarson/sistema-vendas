@@ -1,48 +1,41 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using NuGet.Protocol.Plugins;
+﻿using Application.ApplicationServices.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using SalesWebMvc.Services.Exceptions;
-using SistemaVenda.DAL;
-using SistemaVenda.Entities;
 using SistemaVenda.Models;
-using SistemaVenda.Services;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SistemaVenda.Controllers
 {
     public class ClienteController : Controller
     {
-        protected ClienteService _clienteService;
+        readonly IClienteApplicationService _applicationServiceCliente;
 
-        public ClienteController(ClienteService clienteService)
+        public ClienteController(IClienteApplicationService applicationServiceCliente)
         {
-            _clienteService = clienteService;
+            _applicationServiceCliente = applicationServiceCliente;
         }
 
         // GET: Cliente
         public async Task<IActionResult> Index()
         {
-            return View(await _clienteService.FindAllAsync());
+            return View(await _applicationServiceCliente.FindAllAsync());
         }
 
         // GET: Cliente/Cadastro
         public IActionResult Cadastro()
         {
-            var viewModel = new ClienteFormViewModel();
-            return View(viewModel);
+            return View();
         }
 
         // POST: Cliente/Cadastro
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Cadastro(ClienteFormViewModel viewModel)
+        public async Task<IActionResult> Cadastro(ClienteFormViewModel cliente)
         {
             if (!ModelState.IsValid)
             {
-                return View(viewModel);
+                return View(cliente);
             }
-            var clienteEntity = viewModel.ToEntity();
-            await _clienteService.InsertAsync(clienteEntity);
+            await _applicationServiceCliente.InsertAsync(cliente);
             return RedirectToAction(nameof(Index));
         }
 
@@ -53,33 +46,30 @@ namespace SistemaVenda.Controllers
             {
                 return RedirectToAction(nameof(Error), new { message = "Código não informado." });
             }
-            var obj = await _clienteService.FindByIdAsync(id.Value);
+            var obj = await _applicationServiceCliente.FindByIdAsync(id.Value);
             if (obj == null)
             {
-                return RedirectToAction(nameof(Error), new { message = "Cliente não encontrado." });
+                return RedirectToAction(nameof(Error), new { message = "Categoria não encontrada." });
             }
-
-            var vm = new ClienteFormViewModel(obj);
-            return View(vm);
+            return View(obj);
         }
 
         // POST: Cliente/Editar/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Editar(int id, ClienteFormViewModel viewModel)
+        public async Task<IActionResult> Editar(int id, ClienteFormViewModel cliente)
         {
             if (!ModelState.IsValid)
             {
-                return View(viewModel);
+                return View(cliente);
             }
-            if (id != viewModel.Codigo)
+            if (id != cliente.Codigo)
             {
                 return RedirectToAction(nameof(Error), new { message = "Código inconsistente." });
             }
             try
             {
-                var clienteToUpdate = viewModel.ToEntity();
-                await _clienteService.UpdateAsync(clienteToUpdate);
+                await _applicationServiceCliente.UpdateAsync(cliente);
                 return RedirectToAction(nameof(Index));
             }
             catch (NotFoundException e)
@@ -99,12 +89,12 @@ namespace SistemaVenda.Controllers
             {
                 return RedirectToAction(nameof(Error), new { message = "Código não informado." });
             }
-            var obj = await _clienteService.FindByIdAsync(id.Value);
+            var obj = await _applicationServiceCliente.FindByIdAsync(id.Value);
             if (obj == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Código não encontrado." });
             }
-            return View(obj);
+            return View(obj); // If found, return the view with the seller object
         }
 
         // POST: Cliente/Deletar/5
@@ -114,8 +104,8 @@ namespace SistemaVenda.Controllers
         {
             try
             {
-                await _clienteService.RemoveAsync(id);
-                return RedirectToAction(nameof(Index));
+                await _applicationServiceCliente.RemoveAsync(id);
+                return RedirectToAction(nameof(Index)); // Redirect to the Index action after deletion
             }
             catch (IntegrityException e)
             {
@@ -127,5 +117,6 @@ namespace SistemaVenda.Controllers
         {
             return View(new ErrorViewModel { Message = message });
         }
+
     }
 }

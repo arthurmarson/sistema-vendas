@@ -119,7 +119,7 @@
 					return response.json();
 				})
 				.then(data => {
-					document.getElementById('txtPrecoUnitario').value = data.valor.toFixed(2);
+					document.getElementById('txtPrecoUnitario').value = data.toFixed(2);
 				})
 				.catch(error => {
 					console.error('Erro:', error);

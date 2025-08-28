@@ -1,104 +1,94 @@
-﻿using Domain.Services;
+﻿using Application.ApplicationServices.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using NuGet.Protocol.Plugins;
 using SalesWebMvc.Services.Exceptions;
-using SistemaVenda.DAL;
-using SistemaVenda.Entities;
 using SistemaVenda.Models;
-using SistemaVenda.Services;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SistemaVenda.Controllers
 {
     public class ProdutoController : Controller
     {
-        protected ProdutoService _produtoService;
-        protected CategoriaService _categoriaService;
+        readonly IProdutoApplicationService _applicationServiceProduto;
+        readonly ICategoriaApplicationService _applicationServiceCategoria; // Dependência adicionada
 
-        public ProdutoController(ProdutoService produtoService, CategoriaService categoriaService)
+        public ProdutoController(IProdutoApplicationService applicationServiceProduto, ICategoriaApplicationService categoriaApplicationService)
         {
-            _produtoService = produtoService;
-            _categoriaService = categoriaService;
+            _applicationServiceProduto = applicationServiceProduto;
+            _applicationServiceCategoria = categoriaApplicationService; // Injeção da dependência
         }
 
         // GET: Produto
         public async Task<IActionResult> Index()
         {
-            return View(await _produtoService.FindAllAsync());
+            return View(await _applicationServiceProduto.FindAllAsync());
         }
 
         // GET: Produto/Cadastro
-        //public async Task<IActionResult> Cadastro()
-        //{
-        //    var categorias = await _categoriaService.FindAllAsync();
-        //    var viewModel = new ProdutoFormViewModel { Categorias = categorias };
-        //    return View(viewModel);
-        //}
+        public async Task<IActionResult> Cadastro()
+        {
+            var viewModel = new ProdutoFormViewModel
+            {
+                Categorias = await _applicationServiceCategoria.FindAllAsync() // Popula a lista de categorias
+            };
 
-        //// POST: Produto/Cadastro
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Cadastro(ProdutoFormViewModel viewModel)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        // Recarrega as categorias para o dropdown
-        //        viewModel.Categorias = await _categoriaService.FindAllAsync();
-        //        return View(viewModel);
-        //    }
-        //    var produtoEntity = viewModel.ToEntity();
-        //    await _produtoService.InsertAsync(produtoEntity);
-        //    return RedirectToAction(nameof(Index));
-        //}
+            return View(viewModel);
+        }
 
-        //// GET: Produto/Editar/5
-        //public async Task<IActionResult> Editar(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return RedirectToAction(nameof(Error), new { message = "Código não informado." });
-        //    }
-        //    var obj = await _produtoService.FindByIdAsync(id.Value);
-        //    if (obj == null)
-        //    {
-        //        return RedirectToAction(nameof(Error), new { message = "Produto não encontrado." });
-        //    }
+        // POST: Produto/Cadastro
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Cadastro(ProdutoFormViewModel produto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(produto);
+            }
+            await _applicationServiceProduto.InsertAsync(produto);
+            return RedirectToAction(nameof(Index));
+        }
 
-        //    var vm = new ProdutoFormViewModel(obj);
-        //    vm.Categorias = await _categoriaService.FindAllAsync();
-        //    return View(vm);
-        //}
+        // GET: Produto/Editar/5
+        public async Task<IActionResult> Editar(int? id)
+        {
+            if (id == null)
+            {
+                return RedirectToAction(nameof(Error), new { message = "Código não informado." });
+            }
+            var obj = await _applicationServiceProduto.FindByIdAsync(id.Value);
+            obj.Categorias = await _applicationServiceCategoria.FindAllAsync(); // Popula a lista de categorias
+            if (obj == null)
+            {
+                return RedirectToAction(nameof(Error), new { message = "Produto não encontrado." });
+            }
+            return View(obj);
+        }
 
-        //// POST: Produto/Editar/5
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Editar(int id, ProdutoFormViewModel viewModel)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        viewModel.Categorias = await _categoriaService.FindAllAsync();
-        //        return View(viewModel);
-        //    }
-        //    if (id != viewModel.Codigo)
-        //    {
-        //        return RedirectToAction(nameof(Error), new { message = "Código inconsistente." });
-        //    }
-        //    try
-        //    {
-        //        var produtoToUpdate = viewModel.ToEntity();
-        //        await _produtoService.UpdateAsync(produtoToUpdate);
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    catch (NotFoundException e)
-        //    {
-        //        return RedirectToAction(nameof(Error), new { message = e.Message });
-        //    }
-        //    catch (DbConcurrencyException e)
-        //    {
-        //        return RedirectToAction(nameof(Error), new { message = e.Message });
-        //    }
-        //}
+        // POST: Produto/Editar/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Editar(int id, ProdutoFormViewModel produto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(produto);
+            }
+            if (id != produto.Codigo)
+            {
+                return RedirectToAction(nameof(Error), new { message = "Código inconsistente." });
+            }
+            try
+            {
+                await _applicationServiceProduto.UpdateAsync(produto);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (NotFoundException e)
+            {
+                return RedirectToAction(nameof(Error), new { message = e.Message });
+            }
+            catch (DbConcurrencyException e)
+            {
+                return RedirectToAction(nameof(Error), new { message = e.Message });
+            }
+        }
 
         // GET: Produto/Deletar/5
         public async Task<IActionResult> Deletar(int? id)
@@ -107,12 +97,12 @@ namespace SistemaVenda.Controllers
             {
                 return RedirectToAction(nameof(Error), new { message = "Código não informado." });
             }
-            var obj = await _produtoService.FindByIdAsync(id.Value);
+            var obj = await _applicationServiceProduto.FindByIdAsync(id.Value);
             if (obj == null)
             {
-                return RedirectToAction(nameof(Error), new { message = "Produto não encontrado." });
+                return RedirectToAction(nameof(Error), new { message = "Código não encontrado." });
             }
-            return View(obj);
+            return View(obj); // If found, return the view with the seller object
         }
 
         // POST: Produto/Deletar/5
@@ -122,8 +112,8 @@ namespace SistemaVenda.Controllers
         {
             try
             {
-                await _produtoService.RemoveAsync(id);
-                return RedirectToAction(nameof(Index));
+                await _applicationServiceProduto.RemoveAsync(id);
+                return RedirectToAction(nameof(Index)); // Redirect to the Index action after deletion
             }
             catch (IntegrityException e)
             {
@@ -135,5 +125,6 @@ namespace SistemaVenda.Controllers
         {
             return View(new ErrorViewModel { Message = message });
         }
+
     }
 }

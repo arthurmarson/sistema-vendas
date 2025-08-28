@@ -1,50 +1,42 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+﻿using Application.ApplicationServices.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using SalesWebMvc.Services.Exceptions;
-using SistemaVenda.Entities;
 using SistemaVenda.Models;
-using SistemaVenda.Services;
 
 namespace SistemaVenda.Controllers
 {
     public class VendaController : Controller
     {
-        protected VendaService _vendaService;
-        protected ClienteService _clienteService;
-        protected ProdutoService _produtoService;
+        readonly IVendaApplicationService _applicationServiceVenda;
+        readonly IClienteApplicationService _applicationServiceCliente;
+        readonly IProdutoApplicationService _applicationServiceProduto;
 
-        public VendaController(VendaService vendaService, ClienteService clienteService, ProdutoService produtoService)
+        public VendaController(IVendaApplicationService applicationServiceVenda, IClienteApplicationService clienteApplicationService, IProdutoApplicationService produtoApplicationService)
         {
-            _vendaService = vendaService;
-            _clienteService = clienteService;
-            _produtoService = produtoService;
+            _applicationServiceVenda = applicationServiceVenda;
+            _applicationServiceCliente = clienteApplicationService;
+            _applicationServiceProduto = produtoApplicationService;
         }
 
         // GET: Venda
         public async Task<IActionResult> Index()
         {
-            return View(await _vendaService.FindAllAsync());
+            return View(await _applicationServiceVenda.FindAllAsync());
         }
 
         // GET: Venda/Cadastro
         public async Task<IActionResult> Cadastro(int? id)
         {
             VendaFormViewModel viewModel = new VendaFormViewModel();
-            viewModel.ListaClientes = _vendaService.ListaClientes();
-            viewModel.ListaProdutos = _vendaService.ListaProdutos();
 
             if (id.HasValue)
             {
-                var venda = await _vendaService.FindByIdAsync(id.Value);
-                if (venda == null)
-                {
-                    return RedirectToAction(nameof(Error), new { message = "Venda não encontrada." });
-                }
-                viewModel.Codigo = venda.Codigo;
-                viewModel.Data = venda.Data;
-                viewModel.CodigoCliente = venda.CodigoCliente;
-                viewModel.Total = venda.Total;
+
+                 viewModel = await _applicationServiceVenda.FindByIdAsync(id.Value);
             }
+
+            viewModel.ListaClientes = _applicationServiceVenda.ListaClientes();
+            viewModel.ListaProdutos = _applicationServiceVenda.ListaProdutos();
 
             return View(viewModel);
         }
@@ -52,29 +44,21 @@ namespace SistemaVenda.Controllers
         // POST: Venda/Cadastro
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Cadastro(VendaFormViewModel viewModel)
+        public async Task<IActionResult> Cadastro(VendaFormViewModel venda)
         {
             // Remove these properties from ModelState validation
             ModelState.Remove("ListaClientes");
             ModelState.Remove("ListaProdutos");
-
             if (!ModelState.IsValid)
             {
-                viewModel.ListaClientes = _vendaService.ListaClientes();
-                viewModel.ListaProdutos = _vendaService.ListaProdutos();
-                return View(viewModel);
+                venda.ListaClientes = _applicationServiceVenda.ListaClientes();
+                venda.ListaProdutos = _applicationServiceVenda.ListaProdutos();
+                return View(venda);
             }
-            Venda objVenda = new Venda()
+
+            if (venda.Codigo == null)
             {
-                Codigo = viewModel.Codigo,
-                Data = (DateTime)viewModel.Data,
-                CodigoCliente = (int)viewModel.CodigoCliente,
-                Total = viewModel.Total,
-                Produtos = JsonConvert.DeserializeObject<ICollection<VendaProdutos>>(viewModel.JsonProdutos)
-            };
-            if (viewModel.Codigo == null)
-            {
-                await _vendaService.InsertAsync(objVenda);
+                await _applicationServiceVenda.InsertAsync(venda);
             }
             return RedirectToAction(nameof(Index));
         }
@@ -87,7 +71,7 @@ namespace SistemaVenda.Controllers
                 return RedirectToAction(nameof(Error), new { message = "Código não informado." });
             }
 
-            var venda = await _vendaService.FindByIdAsync(id.Value);
+            var venda = await _applicationServiceVenda.FindByIdAsync(id.Value);
             if (venda == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Venda não encontrada." });
@@ -100,15 +84,9 @@ namespace SistemaVenda.Controllers
                 Data = venda.Data,
                 CodigoCliente = venda.CodigoCliente,
                 Total = venda.Total,
-                ListaClientes = _vendaService.ListaClientes(),
-                ListaProdutos = _vendaService.ListaProdutos(),
-                JsonProdutos = JsonConvert.SerializeObject(venda.Produtos.Select(p => new
-                {
-                    p.CodigoProduto,
-                    p.Quantidade,
-                    p.ValorUnitario,
-                    p.ValorTotal
-                }))
+                ListaClientes = _applicationServiceVenda.ListaClientes(),
+                ListaProdutos = _applicationServiceVenda.ListaProdutos(),
+                JsonProdutos = venda.JsonProdutos // Certifique-se de que JsonProdutos está sendo retornado corretamente
             };
 
             return View(viewModel);
@@ -117,58 +95,19 @@ namespace SistemaVenda.Controllers
         // POST: Venda/Editar/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Editar(int id, VendaFormViewModel viewModel)
+        public async Task<IActionResult> Editar(int id, VendaFormViewModel venda)
         {
-            // Remove these properties from ModelState validation
-            ModelState.Remove("ListaClientes");
-            ModelState.Remove("ListaProdutos");
-
             if (!ModelState.IsValid)
             {
-                viewModel.ListaClientes = _vendaService.ListaClientes();
-                viewModel.ListaProdutos = _vendaService.ListaProdutos();
-                return View(viewModel);
+                return View(venda);
             }
-
-            if (id != viewModel.Codigo)
+            if (id != venda.Codigo)
             {
-                return RedirectToAction(nameof(Error), new { message = "O código da venda informado não corresponde ao código do registro." });
+                return RedirectToAction(nameof(Error), new { message = "Código inconsistente." });
             }
-
-            // Validar e deserializar os produtos
-            ICollection<VendaProdutos> produtos = new List<VendaProdutos>();
-            if (!string.IsNullOrEmpty(viewModel.JsonProdutos))
-            {
-                try
-                {
-                    produtos = JsonConvert.DeserializeObject<ICollection<VendaProdutos>>(viewModel.JsonProdutos);
-                }
-                catch (Exception ex)
-                {
-                    return RedirectToAction(nameof(Error), new { message = "Erro ao processar os produtos da venda." });
-                }
-            }
-
             try
             {
-                // Buscar a venda existente no banco
-                var vendaExistente = await _vendaService.FindByIdAsync(id);
-                if (vendaExistente == null)
-                {
-                    return RedirectToAction(nameof(Error), new { message = "Venda não encontrada." });
-                }
-
-                // Atualizar os campos da venda
-                vendaExistente.Data = (DateTime)viewModel.Data;
-                vendaExistente.CodigoCliente = (int)viewModel.CodigoCliente;
-                vendaExistente.Total = viewModel.Total;
-
-                // Atualizar os produtos da venda
-                await _vendaService.UpdateProdutosAsync(vendaExistente, produtos);
-
-                // Salvar as alterações
-                await _vendaService.UpdateAsync(vendaExistente);
-
+                await _applicationServiceVenda.UpdateAsync(venda);
                 return RedirectToAction(nameof(Index));
             }
             catch (NotFoundException e)
@@ -188,11 +127,10 @@ namespace SistemaVenda.Controllers
             {
                 return RedirectToAction(nameof(Error), new { message = "Código não informado." });
             }
-
-            var obj = await _vendaService.FindByIdAsync(id.Value);
+            var obj = await _applicationServiceVenda.FindByIdAsync(id.Value);
             if (obj == null)
             {
-                return RedirectToAction(nameof(Error), new { message = "Venda não encontrada." });
+                return RedirectToAction(nameof(Error), new { message = "Código não encontrado." });
             }
             return View(obj);
         }
@@ -204,8 +142,8 @@ namespace SistemaVenda.Controllers
         {
             try
             {
-                await _vendaService.RemoveAsync(id);
-                return RedirectToAction(nameof(Index));
+                await _applicationServiceVenda.RemoveAsync(id);
+                return RedirectToAction(nameof(Index)); // Redirect to the Index action after deletion
             }
             catch (IntegrityException e)
             {
@@ -213,28 +151,17 @@ namespace SistemaVenda.Controllers
             }
         }
 
-        [HttpGet("Venda/LerValorProduto/{id}")]
-        public async Task<IActionResult> LerValorProduto(int id)
+        [HttpGet("Venda/LerValorProduto/{CodigoProduto}")]
+        public async Task<decimal> LerValorProduto(int CodigoProduto)
         {
-            if (id <= 0)
-            {
-                return Json(new { success = false, message = "Id inválido" });
-            }
-
-            try
-            {
-                var valorProduto = await _vendaService.ProcurarValorProdutoAsync(id);
-                return Json(new { success = true, valor = valorProduto });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = ex.Message });
-            }
+            var produto = await _applicationServiceProduto.FindByIdAsync(CodigoProduto);
+            return (decimal)(produto != null ? produto.Valor : 0m);
         }
 
         public IActionResult Error(string message)
         {
             return View(new ErrorViewModel { Message = message });
         }
+
     }
 }

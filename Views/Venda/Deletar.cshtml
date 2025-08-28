@@ -1,4 +1,4 @@
-﻿@model SistemaVenda.Entities.Venda  
+﻿@model SistemaVenda.Models.VendaFormViewModel
 
 @{  
     ViewData["Title"] = "Deletar Venda";  
@@ -27,7 +27,7 @@
             Cliente  
         </dt>  
         <dd class="col-sm-10">  
-            @Model.Cliente?.Nome  
+            @Model.NomeCliente
         </dd>  
         <dt class="col-sm-2">  
             @Html.DisplayNameFor(model => model.Total)  
@@ -50,14 +50,19 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var produto in Model.Produtos)
+                @if (!string.IsNullOrEmpty(Model.JsonProdutos))
                 {
-                    <tr>
-                        <td>@produto.CodigoProduto</td>
-                        <td>@produto.ValorUnitario.ToString("F2")</td>
-                        <td>@produto.Quantidade</td>
-                        <td>@produto.ValorTotal.ToString("F2")</td>
-                    </tr>
+                    var produtos = Newtonsoft.Json.JsonConvert.DeserializeObject<List<dynamic>>(Model.JsonProdutos);
+
+                    foreach (var produto in produtos)
+                    {
+                        <tr>
+                            <td>@produto.CodigoProduto</td>
+                            <td>@produto.ValorUnitario.ToString("F2")</td>
+                            <td>@produto.Quantidade</td>
+                            <td>@produto.ValorTotal.ToString("F2")</td>
+                        </tr>
+                    }
                 }
             </tbody>
         </table>

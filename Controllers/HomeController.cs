@@ -1,21 +1,16 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using SistemaVenda.DAL;
-using SistemaVenda.Entities;
 using SistemaVenda.Models;
+using System.Diagnostics;
 
 namespace SistemaVenda.Controllers
 {
     public class HomeController : Controller
     {
-        protected ApplicationDbContext Repositorio;
-
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext repositorio)
+        public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
-            Repositorio = repositorio;
         }
 
         public IActionResult Index()
