@@ -8,32 +8,29 @@ namespace SistemaVenda.Controllers
     public class ProdutoController : Controller
     {
         readonly IProdutoApplicationService _applicationServiceProduto;
-        readonly ICategoriaApplicationService _applicationServiceCategoria; // Dependência adicionada
+        readonly ICategoriaApplicationService _applicationServiceCategoria; 
 
         public ProdutoController(IProdutoApplicationService applicationServiceProduto, ICategoriaApplicationService categoriaApplicationService)
         {
             _applicationServiceProduto = applicationServiceProduto;
-            _applicationServiceCategoria = categoriaApplicationService; // Injeção da dependência
+            _applicationServiceCategoria = categoriaApplicationService; 
         }
 
-        // GET: Produto
         public async Task<IActionResult> Index()
         {
             return View(await _applicationServiceProduto.FindAllAsync());
         }
 
-        // GET: Produto/Cadastro
         public async Task<IActionResult> Cadastro()
         {
             var viewModel = new ProdutoFormViewModel
             {
-                Categorias = await _applicationServiceCategoria.FindAllAsync() // Popula a lista de categorias
+                Categorias = await _applicationServiceCategoria.FindAllAsync() 
             };
 
             return View(viewModel);
         }
 
-        // POST: Produto/Cadastro
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Cadastro(ProdutoFormViewModel produto)
@@ -46,7 +43,6 @@ namespace SistemaVenda.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Produto/Editar/5
         public async Task<IActionResult> Editar(int? id)
         {
             if (id == null)
@@ -54,7 +50,7 @@ namespace SistemaVenda.Controllers
                 return RedirectToAction(nameof(Error), new { message = "Código não informado." });
             }
             var obj = await _applicationServiceProduto.FindByIdAsync(id.Value);
-            obj.Categorias = await _applicationServiceCategoria.FindAllAsync(); // Popula a lista de categorias
+            obj.Categorias = await _applicationServiceCategoria.FindAllAsync(); 
             if (obj == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Produto não encontrado." });
@@ -62,7 +58,6 @@ namespace SistemaVenda.Controllers
             return View(obj);
         }
 
-        // POST: Produto/Editar/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Editar(int id, ProdutoFormViewModel produto)
@@ -90,7 +85,6 @@ namespace SistemaVenda.Controllers
             }
         }
 
-        // GET: Produto/Deletar/5
         public async Task<IActionResult> Deletar(int? id)
         {
             if (id == null)
@@ -102,10 +96,9 @@ namespace SistemaVenda.Controllers
             {
                 return RedirectToAction(nameof(Error), new { message = "Código não encontrado." });
             }
-            return View(obj); // If found, return the view with the seller object
+            return View(obj); 
         }
 
-        // POST: Produto/Deletar/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Deletar(int id)
@@ -113,7 +106,7 @@ namespace SistemaVenda.Controllers
             try
             {
                 await _applicationServiceProduto.RemoveAsync(id);
-                return RedirectToAction(nameof(Index)); // Redirect to the Index action after deletion
+                return RedirectToAction(nameof(Index)); 
             }
             catch (IntegrityException e)
             {

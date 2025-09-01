@@ -10,12 +10,10 @@ namespace Application.ApplicationServices
     {
         private readonly ICategoriaService _categoriaService;
 
-        // Injeção de dependência do serviço de categoria do domínio
         public CategoriaApplicationService(ICategoriaService categoriaService)
         {
             _categoriaService = categoriaService;
         }
-
 
         public async Task InsertAsync(CategoriaViewModel categoria)
         {
@@ -33,7 +31,6 @@ namespace Application.ApplicationServices
 
             List<CategoriaViewModel> listaCategoria = new List<CategoriaViewModel>();
 
-            // Mapeamento dos dados do domínio (Categoria) para a ViewModel (CategoriaViewModel)
             foreach (var item in lista)
             {
                 CategoriaViewModel categoria = new CategoriaViewModel()
@@ -50,7 +47,6 @@ namespace Application.ApplicationServices
         {
             var registro = await _categoriaService.FindByIdAsync(codigoCategoria);
 
-            // Mapeamento manual dos dados do domínio (Categoria) para a ViewModel (CategoriaViewModel)
             CategoriaViewModel categoria = new CategoriaViewModel()
             {
                 Codigo = registro.Codigo,

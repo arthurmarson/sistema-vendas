@@ -9,7 +9,6 @@ namespace Domain.Services
     {
         ICategoriaRepository CategoriaRepository;
 
-        // Injeção de dependência do repositório de categoria
         public CategoriaService(ICategoriaRepository categoriaRepository)
         {
             CategoriaRepository = categoriaRepository;
@@ -17,32 +16,27 @@ namespace Domain.Services
 
         public async Task InsertAsync(Categoria categoria)
         {
-            CategoriaRepository.Create(categoria);
+            await CategoriaRepository.CreateAsync(categoria);
         }
 
         public async Task<IEnumerable<Categoria>> FindAllAsync()
         {
-            // Comunicação com o repositório para buscar todas as categorias
-            return CategoriaRepository.Read(); 
+            return await CategoriaRepository.ReadAllAsync(); 
         }
 
         public async Task<Categoria> FindByIdAsync(int id)
         {
-            // Comunicação com o repositório para buscar uma categoria por ID
-            return CategoriaRepository.Read(id);
+            return await CategoriaRepository.ReadAsync(id);
         }
 
         public async Task UpdateAsync(Categoria categoria)
         {
-            CategoriaRepository.Update(categoria);
+            await CategoriaRepository.UpdateAsync(categoria);
         }
 
         public async Task RemoveAsync(int id)
         {
-            CategoriaRepository.Delete(id);
+            await CategoriaRepository.DeleteAsync(id);
         }
-
-
-        
     }
 }

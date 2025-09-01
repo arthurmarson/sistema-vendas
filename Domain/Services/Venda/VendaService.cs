@@ -19,42 +19,42 @@ namespace Domain.Services
 
         public async Task InsertAsync(Venda venda)
         {
-            VendaRepository.Create(venda);
+            await VendaRepository.CreateAsync(venda);
         }
 
         public async Task<IEnumerable<Venda>> FindAllAsync()
         {
-            return VendaRepository.Read(); 
+            return await VendaRepository.ReadAllAsync(); 
         }
 
         public async Task<Venda> FindByIdAsync(int id)
         {
-            return VendaRepository.Read(id);
+            return await VendaRepository.ReadAsync(id);
         }
 
         public async Task UpdateAsync(Venda venda)
         {
-            VendaRepository.Update(venda);
+            await VendaRepository.UpdateAsync(venda);
         }
 
         public async Task RemoveAsync(int id)
         {
-            VendaRepository.Delete(id);
+            await VendaRepository.DeleteAsync(id);
         }
 
-        public IEnumerable<Cliente> ListaClientes()
+        public async Task<IEnumerable<Cliente>> ListaClientesAsync()
         {
-            return VendaRepository.ObterListaClientes();
+            return await VendaRepository.ObterListaClientesAsync();
         }
 
-        public IEnumerable<Produto> ListaProdutos()
+        public async Task<IEnumerable<Produto>> ListaProdutosAsync()
         {
-            return VendaRepository.ObterListaProdutos();
+            return await VendaRepository.ObterListaProdutosAsync();
         }
 
-        public IEnumerable<RelatorioViewModel> ListaRelatorio()
+        public async Task<IEnumerable<RelatorioViewModel>> ListaRelatorioAsync()
         {
-            return VendaProdutosRepository.ListaRelatorio();
+            return await VendaProdutosRepository.ListaRelatorioAsync();
         }
     }
 }

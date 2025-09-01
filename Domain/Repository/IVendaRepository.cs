@@ -5,7 +5,7 @@ namespace Domain.Repository
 {
     public interface IVendaRepository : IRepository<Venda>
     {
-        IEnumerable<Cliente> ObterListaClientes();
-        IEnumerable<Produto> ObterListaProdutos();
+        Task<IEnumerable<Cliente>> ObterListaClientesAsync();
+        Task<IEnumerable<Produto>> ObterListaProdutosAsync();
     }
 }

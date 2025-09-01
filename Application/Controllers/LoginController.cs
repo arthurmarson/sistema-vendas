@@ -32,8 +32,8 @@ namespace SistemaVenda.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(LoginFormViewModel viewModel)
         {
-            ModelState.Remove("Nome"); // Remove a validação para o campo Nome
-            ModelState.Remove("Codigo"); // Remove a validação para o campo Codigo
+            ModelState.Remove("Nome"); 
+            ModelState.Remove("Codigo"); 
             ViewData["ErrorMessage"] = string.Empty;
 
             if (!ModelState.IsValid)
@@ -47,13 +47,12 @@ namespace SistemaVenda.Controllers
                 var httpContext = _httpContextAccessor.HttpContext;
                 if (httpContext != null)
                 {
-                    httpContext.Session.SetString(Sessao.NOME_USUARIO, usuario.Nome); // Use o nome do usuário retornado
+                    httpContext.Session.SetString(Sessao.NOME_USUARIO, usuario.Nome); 
                     httpContext.Session.SetString(Sessao.EMAIL_USUARIO, usuario.Email);
                     httpContext.Session.SetInt32(Sessao.CODIGO_USUARIO, usuario.Codigo);
                     httpContext.Session.SetInt32(Sessao.LOGADO, 1);
                 }
 
-                // Redireciona para a página Index da controller Home
                 return RedirectToAction("Index", "Home");
             }
             else

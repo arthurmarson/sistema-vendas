@@ -14,7 +14,6 @@ namespace Application.ApplicationServices
     {
         private readonly IVendaService _vendaService;
 
-        // Injeção de dependência do serviço de venda do domínio
         public VendaApplicationService(IVendaService vendaService)
         {
             _vendaService = vendaService;
@@ -32,7 +31,7 @@ namespace Application.ApplicationServices
                 CodigoCliente = venda.CodigoCliente ?? throw new InvalidOperationException("Cliente é obrigatório."),
                 Total = venda.Total, 
                 Produtos = string.IsNullOrWhiteSpace(venda.JsonProdutos)
-                    ? new List<VendaProdutos>() // Se JsonProdutos for null ou vazio, inicialize com uma lista vazia
+                    ? new List<VendaProdutos>() 
                     : JsonConvert.DeserializeObject<ICollection<VendaProdutos>>(venda.JsonProdutos)
             };
 
@@ -45,7 +44,6 @@ namespace Application.ApplicationServices
 
             List<VendaFormViewModel> listaVendas = new List<VendaFormViewModel>();
 
-            // Mapeamento dos dados do domínio (Venda) para a ViewModel (VendaFormViewModel)
             foreach (var item in lista)
             {
                 VendaFormViewModel venda = new VendaFormViewModel()
@@ -64,7 +62,6 @@ namespace Application.ApplicationServices
         {
             var registro = await _vendaService.FindByIdAsync(codigoVenda);
 
-            // Mapeamento manual dos dados do domínio (Venda) para a ViewModel (VendaFormViewModel)
             VendaFormViewModel venda = new VendaFormViewModel()
             {
                 Codigo = (int)registro.Codigo,
@@ -113,7 +110,7 @@ namespace Application.ApplicationServices
             }
         }
 
-        public IEnumerable<SelectListItem> ListaClientes()
+        public async Task<IEnumerable<SelectListItem>> ListaClientesAsync()
         {
             List<SelectListItem> lista = new List<SelectListItem>();
 
@@ -123,7 +120,7 @@ namespace Application.ApplicationServices
                 Text = string.Empty
             });
 
-            foreach (var item in _vendaService.ListaClientes())
+            foreach (var item in await _vendaService.ListaClientesAsync())
             {
                 lista.Add(new SelectListItem()
                 {
@@ -134,7 +131,7 @@ namespace Application.ApplicationServices
             return lista;
         }
 
-        public IEnumerable<SelectListItem> ListaProdutos()
+        public async Task<IEnumerable<SelectListItem>> ListaProdutosAsync()
         {
             List<SelectListItem> lista = new List<SelectListItem>();
 
@@ -144,7 +141,7 @@ namespace Application.ApplicationServices
                 Text = string.Empty
             });
 
-            foreach (var item in _vendaService.ListaProdutos())
+            foreach (var item in await _vendaService.ListaProdutosAsync())
             {
                 lista.Add(new SelectListItem()
                 {
@@ -155,9 +152,9 @@ namespace Application.ApplicationServices
             return lista;
         }
 
-        public IEnumerable<SistemaVenda.Domain.DTO.RelatorioViewModel> ListaRelatorio()
+        public async Task<IEnumerable<SistemaVenda.Domain.DTO.RelatorioViewModel>> ListaRelatorioAsync()
         {
-            return (IEnumerable<SistemaVenda.Domain.DTO.RelatorioViewModel>)_vendaService.ListaRelatorio();
+            return await _vendaService.ListaRelatorioAsync();
         }
     }
 }

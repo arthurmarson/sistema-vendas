@@ -15,8 +15,8 @@ namespace Application.ApplicationServices.Interfaces
 
         Task RemoveAsync(int id);
 
-        IEnumerable<SelectListItem> ListaClientes();
-        IEnumerable<SelectListItem> ListaProdutos();
-        IEnumerable<SistemaVenda.Domain.DTO.RelatorioViewModel> ListaRelatorio();
+        Task<IEnumerable<SelectListItem>> ListaClientesAsync();
+        Task<IEnumerable<SelectListItem>> ListaProdutosAsync();
+        Task<IEnumerable<SistemaVenda.Domain.DTO.RelatorioViewModel>> ListaRelatorioAsync();
     }
 }

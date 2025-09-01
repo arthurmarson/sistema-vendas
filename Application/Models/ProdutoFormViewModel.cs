@@ -21,7 +21,6 @@ namespace SistemaVenda.Models
         [Required(ErrorMessage = "Informe a categoria do produto")]
         public int? CodigoCategoria { get; set; }
 
-        //public ICollection<Categoria> Categorias { get; set; } = new List<Categoria>();
         public CategoriaViewModel? Categoria { get; set; }
         public IEnumerable<CategoriaViewModel>? Categorias { get; set; } = new List<CategoriaViewModel>();
 

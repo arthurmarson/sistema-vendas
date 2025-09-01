@@ -20,9 +20,9 @@ namespace Repository.Entities
             DbSetContext = mContext;
         }
 
-        public IEnumerable<RelatorioViewModel> ListaRelatorio()
+        public async Task<IEnumerable<RelatorioViewModel>> ListaRelatorioAsync()
         {
-            return DbSetContext.VendaProdutos
+            return await DbSetContext.VendaProdutos
                 .Include(x => x.Produto)
                 .GroupBy(x => x.CodigoProduto)
                 .Select(y => new RelatorioViewModel
@@ -31,7 +31,7 @@ namespace Repository.Entities
                     Descricao = y.Select(p => p.Produto.Descricao).FirstOrDefault() ?? string.Empty,
                     TotalVendido = y.Sum(p => p.Quantidade),
                 })
-                .ToList();
+                .ToListAsync();
         }
     }
 }

@@ -10,8 +10,8 @@ namespace Domain.Interfaces
 {
     public interface IVendaService : ICRUDService<Venda>
     {
-        IEnumerable<Cliente> ListaClientes();
-        IEnumerable<Produto> ListaProdutos();
-        IEnumerable<RelatorioViewModel> ListaRelatorio(); 
+        Task<IEnumerable<Cliente>> ListaClientesAsync();
+        Task<IEnumerable<Produto>> ListaProdutosAsync();
+        Task<IEnumerable<RelatorioViewModel>> ListaRelatorioAsync(); 
     }
 }

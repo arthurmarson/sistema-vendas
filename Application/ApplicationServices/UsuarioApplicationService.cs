@@ -12,7 +12,6 @@ namespace Application.ApplicationServices
     {
         private readonly IUsuarioService _usuarioService;
 
-        // Injeção de dependência do serviço de categoria do domínio
         public UsuarioApplicationService(IUsuarioService usuarioService)
         {
             _usuarioService = usuarioService;
@@ -20,12 +19,10 @@ namespace Application.ApplicationServices
 
         public async Task<Usuario> AuthenticateAsync(string email, string senha)
         {
-            // Criptografar a senha fornecida pelo usuário
             var senhaCriptografada = Criptografia.GetMD5Hash(senha);
 
-            // Buscar o usuário com a senha criptografada
             var user = await _usuarioService.FindByEmailAndPasswordAsync(email, senhaCriptografada);
-            return user; // Retorna o usuário encontrado ou null.
+            return user; 
         }
     }
 }

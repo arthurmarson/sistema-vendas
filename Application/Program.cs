@@ -17,7 +17,6 @@ namespace SistemaVenda
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // A princípio, será definitiva
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseMySql(
                     builder.Configuration.GetConnectionString("ApplicationDbContext"),
@@ -25,26 +24,22 @@ namespace SistemaVenda
                     builder => builder.MigrationsAssembly("SistemaVenda")
                 ));
 
-            //builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddSession();
 
 
-            // Application Service
             builder.Services.AddScoped<ICategoriaApplicationService, CategoriaApplicationService>();
             builder.Services.AddScoped<IClienteApplicationService, ClienteApplicationService>();
             builder.Services.AddScoped<IProdutoApplicationService, ProdutoApplicationService>();
             builder.Services.AddScoped<IVendaApplicationService, VendaApplicationService>();
             builder.Services.AddScoped<IUsuarioApplicationService, UsuarioApplicationService>();
 
-            // Domain Service 
             builder.Services.AddScoped<ICategoriaService, CategoriaService>();
             builder.Services.AddScoped<IClienteService, ClienteService>();
             builder.Services.AddScoped<IProdutoService, ProdutoService>();
             builder.Services.AddScoped<IVendaService, VendaService>();
             builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 
-            // Repository
             builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
             builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
             builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
@@ -52,16 +47,13 @@ namespace SistemaVenda
             builder.Services.AddScoped<IVendaProdutosRepository, VendaProdutosRepository>();
             builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 
-            // Add services to the container.
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
@@ -69,7 +61,6 @@ namespace SistemaVenda
             app.UseStaticFiles();
             app.UseSession();
 
-            // Add after other service configurations but before app.UseRouting()
             var enUS = new CultureInfo("en-US");
             var localizationOptions = new RequestLocalizationOptions
             {

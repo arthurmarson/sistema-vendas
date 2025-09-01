@@ -16,27 +16,27 @@ namespace Domain.Services
 
         public async Task InsertAsync(Produto produto)
         {
-            ProdutoRepository.Create(produto);
+            await ProdutoRepository.CreateAsync(produto);
         }
 
         public async Task<IEnumerable<Produto>> FindAllAsync()
         {
-            return ProdutoRepository.Read(); // Chama o método sobrescrito no ProdutoRepository
+            return await ProdutoRepository.ReadAllAsync(); 
         }
 
         public async Task<Produto> FindByIdAsync(int id)
         {
-            return ProdutoRepository.Read(id);
+            return await ProdutoRepository.ReadAsync(id);
         }
 
         public async Task UpdateAsync(Produto produto)
         {
-            ProdutoRepository.Update(produto);
+            await ProdutoRepository.UpdateAsync(produto);
         }
 
         public async Task RemoveAsync(int id)
         {
-            ProdutoRepository.Delete(id);
+            await ProdutoRepository.DeleteAsync(id);
         }
 
     }

@@ -14,7 +14,7 @@ namespace SistemaVenda.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var listaVendaProduto = _vendaApplicationService.ListaRelatorio();
+            var listaVendaProduto = await _vendaApplicationService.ListaRelatorioAsync();
 
             if (listaVendaProduto == null || !listaVendaProduto.Any())
             {

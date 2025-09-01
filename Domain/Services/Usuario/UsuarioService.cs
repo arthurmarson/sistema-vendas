@@ -16,36 +16,32 @@ namespace Domain.Services
 
         public async Task InsertAsync(Usuario usuario)
         {
-            UsuarioRepository.Create(usuario);
+            await UsuarioRepository.CreateAsync(usuario);
         }
 
         public async Task<IEnumerable<Usuario>> FindAllAsync()
         {
-            // Comunicação com o repositório para buscar todas as categorias
-            return UsuarioRepository.Read(); 
+            return await UsuarioRepository.ReadAllAsync(); 
         }
 
         public async Task<Usuario> FindByIdAsync(int id)
         {
-            // Comunicação com o repositório para buscar uma categoria por ID
-            return UsuarioRepository.Read(id);
+            return await UsuarioRepository.ReadAsync(id);
         }
 
         public async Task UpdateAsync(Usuario usuario)
         {
-            UsuarioRepository.Update(usuario);
+            await UsuarioRepository.UpdateAsync(usuario);
         }
 
         public async Task RemoveAsync(int id)
         {
-            UsuarioRepository.Delete(id);
+            await UsuarioRepository.DeleteAsync(id);
         }
 
         public async Task<Usuario> FindByEmailAndPasswordAsync(string email, string senha)
         {
             return await UsuarioRepository.FindByEmailAndPasswordAsync(email, senha);
         }
-
-
     }
 }

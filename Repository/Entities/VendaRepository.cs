@@ -18,43 +18,41 @@ namespace Repository.Entities
         {
            
         }
-        public IEnumerable<Cliente> ObterListaClientes()
+        public async Task<IEnumerable<Cliente>> ObterListaClientesAsync()
         {
-            return Db.Set<Cliente>().ToList();
+            return await Db.Set<Cliente>().ToListAsync();
         }
 
-        public IEnumerable<Produto> ObterListaProdutos()
+        public async Task<IEnumerable<Produto>> ObterListaProdutosAsync()
         {
-            return Db.Set<Produto>().ToList();
+            return await Db.Set<Produto>().ToListAsync();
         }
 
-        public override Venda Read(int Id)
+        public override async Task<Venda> ReadAsync(int Id)
         {
-            return DbSetContext
+            return await DbSetContext
                 .Include(v => v.Cliente)
                 .Include(v => v.Produtos)
                     .ThenInclude(vp => vp.Produto)
-                .FirstOrDefault(v => v.Codigo == Id);
+                .FirstOrDefaultAsync(v => v.Codigo == Id);
         }
 
-        public override void Delete(int Id)
+        public override async Task DeleteAsync(int Id)
         {
-            var venda = DbSetContext
-                .Include(v => v.Produtos) // Incluir os produtos relacionados
-                .FirstOrDefault(v => v.Codigo == Id);
+            var venda = await DbSetContext
+                .Include(v => v.Produtos) 
+                .FirstOrDefaultAsync(v => v.Codigo == Id);
 
             if (venda == null)
             {
                 throw new NotFoundException("Venda não encontrada.");
             }
 
-            // Remover os produtos relacionados
             Db.Set<VendaProdutos>().RemoveRange(venda.Produtos);
 
-            // Remover a venda
             DbSetContext.Remove(venda);
 
-            Db.SaveChanges();
+            await Db.SaveChangesAsync();
         }
     }
 }

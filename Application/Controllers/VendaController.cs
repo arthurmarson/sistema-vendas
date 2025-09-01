@@ -18,13 +18,11 @@ namespace SistemaVenda.Controllers
             _applicationServiceProduto = produtoApplicationService;
         }
 
-        // GET: Venda
         public async Task<IActionResult> Index()
         {
             return View(await _applicationServiceVenda.FindAllAsync());
         }
 
-        // GET: Venda/Cadastro
         public async Task<IActionResult> Cadastro(int? id)
         {
             VendaFormViewModel viewModel = new VendaFormViewModel();
@@ -35,24 +33,22 @@ namespace SistemaVenda.Controllers
                  viewModel = await _applicationServiceVenda.FindByIdAsync(id.Value);
             }
 
-            viewModel.ListaClientes = _applicationServiceVenda.ListaClientes();
-            viewModel.ListaProdutos = _applicationServiceVenda.ListaProdutos();
+            viewModel.ListaClientes = await _applicationServiceVenda.ListaClientesAsync();
+            viewModel.ListaProdutos = await _applicationServiceVenda.ListaProdutosAsync();
 
             return View(viewModel);
         }
 
-        // POST: Venda/Cadastro
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Cadastro(VendaFormViewModel venda)
         {
-            // Remove these properties from ModelState validation
             ModelState.Remove("ListaClientes");
             ModelState.Remove("ListaProdutos");
             if (!ModelState.IsValid)
             {
-                venda.ListaClientes = _applicationServiceVenda.ListaClientes();
-                venda.ListaProdutos = _applicationServiceVenda.ListaProdutos();
+                venda.ListaClientes = await _applicationServiceVenda.ListaClientesAsync();
+                venda.ListaProdutos = await _applicationServiceVenda.ListaProdutosAsync();
                 return View(venda);
             }
 
@@ -63,7 +59,6 @@ namespace SistemaVenda.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Venda/Editar/5
         public async Task<IActionResult> Editar(int? id)
         {
             if (id == null)
@@ -77,22 +72,20 @@ namespace SistemaVenda.Controllers
                 return RedirectToAction(nameof(Error), new { message = "Venda não encontrada." });
             }
 
-            // Preencher o ViewModel com os dados da venda
             VendaFormViewModel viewModel = new VendaFormViewModel
             {
                 Codigo = venda.Codigo,
                 Data = venda.Data,
                 CodigoCliente = venda.CodigoCliente,
                 Total = venda.Total,
-                ListaClientes = _applicationServiceVenda.ListaClientes(),
-                ListaProdutos = _applicationServiceVenda.ListaProdutos(),
-                JsonProdutos = venda.JsonProdutos // Certifique-se de que JsonProdutos está sendo retornado corretamente
+                ListaClientes = await _applicationServiceVenda.ListaClientesAsync(),
+                ListaProdutos = await _applicationServiceVenda.ListaProdutosAsync(),
+                JsonProdutos = venda.JsonProdutos 
             };
 
             return View(viewModel);
         }
 
-        // POST: Venda/Editar/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Editar(int id, VendaFormViewModel venda)
@@ -120,7 +113,6 @@ namespace SistemaVenda.Controllers
             }
         }
 
-        // GET: Venda/Deletar/5
         public async Task<IActionResult> Deletar(int? id)
         {
             if (id == null)
@@ -135,7 +127,6 @@ namespace SistemaVenda.Controllers
             return View(obj);
         }
 
-        // POST: Venda/Deletar/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Deletar(int id)
@@ -143,7 +134,7 @@ namespace SistemaVenda.Controllers
             try
             {
                 await _applicationServiceVenda.RemoveAsync(id);
-                return RedirectToAction(nameof(Index)); // Redirect to the Index action after deletion
+                return RedirectToAction(nameof(Index)); 
             }
             catch (IntegrityException e)
             {

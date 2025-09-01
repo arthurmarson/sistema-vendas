@@ -22,42 +22,35 @@ namespace Repository
             DbSetContext = Db.Set<TEntidade>();
         }
 
-        public void Create(TEntidade Entity)
+        public async Task CreateAsync(TEntidade Entity)
         {
-            if (Entity.Codigo != null)
-            {
-                DbSetContext.Add(Entity);
-                Db.SaveChanges();
-            }
+            await DbSetContext.AddAsync(Entity);
+            await Db.SaveChangesAsync();
         }
 
-        public virtual TEntidade Read(int Id)
+        public virtual async Task<TEntidade> ReadAsync(int Id)
         {
-            return DbSetContext.Find(Id);
-            //return DbSetContext.Where(x => x.Codigo == Id).FirstOrDefault();
+            return await DbSetContext.FindAsync(Id);
         }
 
-        public virtual IEnumerable<TEntidade> Read()
+        public virtual async  Task<IEnumerable<TEntidade>> ReadAllAsync()
         {
-            return DbSetContext.AsNoTracking().ToList();
+            return await DbSetContext.AsNoTracking().ToListAsync();
         }
 
-        public void Update(TEntidade Entity)
+        public async Task UpdateAsync(TEntidade Entity)
         {
-            if (Entity.Codigo != null)
-            {
-                DbSetContext.Update(Entity);
-                Db.SaveChanges();
-            }
+            DbSetContext.Update(Entity);
+            await Db.SaveChangesAsync();
         }
 
-        public virtual void Delete(int Id)
+        public virtual async Task DeleteAsync(int Id)
         {
-            var obj = DbSetContext.Find(Id);
+            var obj = await DbSetContext.FindAsync(Id);
             if (obj != null)
             {
                 DbSetContext.Remove(obj);
-                Db.SaveChanges();
+                await Db.SaveChangesAsync();
             }
         }
     }

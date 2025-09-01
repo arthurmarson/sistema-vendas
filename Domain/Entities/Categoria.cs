@@ -12,11 +12,5 @@ namespace SistemaVenda.Domain.Entities
         public Categoria()
         {
         }
-
-        //public Categoria(int? codigo, string descricao)
-        //{
-        //    Codigo = codigo;
-        //    Descricao = descricao;
-        //}
     }
 }

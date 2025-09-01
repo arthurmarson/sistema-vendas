@@ -10,6 +10,6 @@ namespace Domain.Repository
 {
     public interface IVendaProdutosRepository 
     {
-        IEnumerable<RelatorioViewModel> ListaRelatorio();
+        Task<IEnumerable<RelatorioViewModel>> ListaRelatorioAsync();
     }
 }

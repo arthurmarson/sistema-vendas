@@ -9,10 +9,10 @@ namespace Repository
     public interface IRepository<TEntidade>
         where TEntidade : class
     {
-        void Create(TEntidade Entity);
-        TEntidade Read(int Id);
-        void Update(TEntidade Entity);
-        void Delete(int Id);
-        IEnumerable<TEntidade> Read();   
+        Task CreateAsync(TEntidade Entity);
+        Task<TEntidade> ReadAsync(int Id);
+        Task<IEnumerable<TEntidade>> ReadAllAsync();
+        Task UpdateAsync(TEntidade Entity);
+        Task DeleteAsync(int Id);
     }
 }

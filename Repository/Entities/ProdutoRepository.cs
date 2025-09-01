@@ -18,12 +18,12 @@ namespace Repository.Entities
            
         }
 
-        public override IEnumerable<Produto> Read()
+        public override async Task<IEnumerable<Produto>> ReadAllAsync()
         {
-            return DbSetContext
-                .Include(p => p.Categoria) // Inclui a propriedade de navegação Categoria
+            return await DbSetContext
+                .Include(p => p.Categoria) 
                 .AsNoTracking()
-                .ToList();
+                .ToListAsync();
         }
     }
 }

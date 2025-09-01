@@ -14,19 +14,16 @@ namespace SistemaVenda.Controllers
             _applicationServiceCategoria = applicationServiceCategoria;
         }
 
-        // GET: Categoria
         public async Task<IActionResult> Index()
         {
             return View(await _applicationServiceCategoria.FindAllAsync());
         }
 
-        // GET: Categoria/Cadastro
         public IActionResult Cadastro()
         {
             return View();
         }
 
-        // POST: Categoria/Cadastro
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Cadastro(CategoriaViewModel categoria)
@@ -40,7 +37,6 @@ namespace SistemaVenda.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Categoria/Editar/5
         public async Task<IActionResult> Editar(int? id)
         {
             if (id == null)
@@ -55,7 +51,6 @@ namespace SistemaVenda.Controllers
             return View(obj);
         }
 
-        // POST: Categoria/Editar/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Editar(int id, CategoriaViewModel categoria)
@@ -84,7 +79,6 @@ namespace SistemaVenda.Controllers
             }
         }
 
-        // GET: Categoria/Deletar/5
         public async Task<IActionResult> Deletar(int? id)
         {
             if (id == null)
@@ -96,10 +90,9 @@ namespace SistemaVenda.Controllers
             {
                 return RedirectToAction(nameof(Error), new { message = "Código não encontrado." });
             }
-            return View(obj); // If found, return the view with the seller object
+            return View(obj);
         }
 
-        // POST: Categoria/Deletar/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Deletar(int id)
@@ -107,7 +100,7 @@ namespace SistemaVenda.Controllers
             try
             {
                 await _applicationServiceCategoria.RemoveAsync(id);
-                return RedirectToAction(nameof(Index)); // Redirect to the Index action after deletion
+                return RedirectToAction(nameof(Index)); 
             }
             catch (IntegrityException e)
             {
